@@ -16,8 +16,8 @@ limpos neste repositório (verificado em 2026-10-23). Cobertura por `npm run tes
 - [x] `diasEntre`/`diasRestantes`/`hojeNoFuso`: virada de mês, virada de ano, e data de calendário calculada no fuso do atleta (não em UTC) — inclui o caso em que o dia em UTC e no fuso do atleta diferem.
 - [x] `provaSchema`: distância obrigatória para modalidade única, nome obrigatório quando modalidade "outra", mínimo de 2 etapas para modalidades multisport, validação do link oficial (precisa de `http(s)://`).
 
-Dois bugs reais foram encontrados e corrigidos graças aos testes/validação
-real (não apareceriam só com lint/typecheck):
+Bugs reais foram encontrados e corrigidos graças aos testes/validação real
+(não apareceriam só com lint/typecheck):
 
 1. A validação de e-mail rodava **antes** da normalização (trim), então um
    e-mail digitado com espaço nas pontas era rejeitado por formato em vez de
@@ -26,6 +26,20 @@ real (não apareceriam só com lint/typecheck):
    `scheduled_for`/`status` sem alias, ambíguo com a tabela alvo do UPDATE —
    só aparece ao rodar de verdade contra Postgres. Corrigido nas migrations
    de `reminder_jobs`.
+3. **Reportado por um usuário real**: senha com caractere acentuado
+   funcionava no cadastro (e no acesso logo após confirmar o e-mail), mas
+   falhava com "senha inválida" num login posterior. Causa raiz confirmada
+   com um teste direto contra o GoTrue local: o Supabase Auth compara a
+   senha byte a byte, sem normalização Unicode. Um caractere acentuado
+   digitado/colado como forma NFC (`á` = 1 code point) numa hora e como
+   forma NFD (`a` + acento combinante = 2 code points) em outra — algo que
+   varia por teclado, método de entrada e autofill/gerenciador de senhas do
+   navegador — é visualmente idêntico, mas gera senhas diferentes para o
+   GoTrue. Corrigido normalizando toda senha para NFC
+   (`normalizarSenha` em `src/lib/auth/validacao.ts`) antes de qualquer
+   chamada ao Supabase Auth: cadastro, login, troca de senha e redefinição.
+   Reproduzido e confirmado corrigido via navegador headless real (cadastro
+   → confirmação → logout → login com a forma NFD da mesma senha).
 
 ## 2. Testes manuais/ponta-a-ponta — executados neste ambiente (2026-10-23)
 

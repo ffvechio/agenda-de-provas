@@ -1,14 +1,30 @@
 import { z } from "zod";
-import { POLITICA_SENHA, dataNascimentoValida, normalizarEmail } from "./validacao";
+import {
+  POLITICA_SENHA,
+  dataNascimentoValida,
+  normalizarEmail,
+  normalizarSenha,
+} from "./validacao";
 
+// Normaliza para NFC ANTES de validar o tamanho — ver normalizarSenha().
+// A mesma transformação é aplicada em qualquer campo de senha que acabe
+// sendo comparado ou enviado ao Supabase Auth (login, confirmação,
+// senha atual), não só aqui.
 const senhaSchema = z
   .string()
-  .min(POLITICA_SENHA.minimo, {
-    error: `A senha precisa ter pelo menos ${POLITICA_SENHA.minimo} caracteres.`,
-  })
-  .max(POLITICA_SENHA.maximo, {
-    error: `A senha pode ter no máximo ${POLITICA_SENHA.maximo} caracteres.`,
-  });
+  .transform(normalizarSenha)
+  .pipe(
+    z
+      .string()
+      .min(POLITICA_SENHA.minimo, {
+        error: `A senha precisa ter pelo menos ${POLITICA_SENHA.minimo} caracteres.`,
+      })
+      .max(POLITICA_SENHA.maximo, {
+        error: `A senha pode ter no máximo ${POLITICA_SENHA.maximo} caracteres.`,
+      })
+  );
+
+const confirmarSenhaSchema = z.string().transform(normalizarSenha);
 
 // Normaliza (trim + minúsculas) ANTES de validar o formato — caso
 // contrário, espaços nas extremidades fariam a validação de formato
@@ -32,7 +48,7 @@ export const cadastroSchema = z
       }),
     email: emailSchema,
     senha: senhaSchema,
-    confirmarSenha: z.string(),
+    confirmarSenha: confirmarSenhaSchema,
   })
   .refine((dados) => dados.senha === dados.confirmarSenha, {
     error: "As senhas não coincidem.",
@@ -43,7 +59,10 @@ export type CadastroInput = z.input<typeof cadastroSchema>;
 
 export const loginSchema = z.object({
   email: emailSchema,
-  senha: z.string().min(1, { error: "Informe sua senha." }),
+  senha: z
+    .string()
+    .min(1, { error: "Informe sua senha." })
+    .transform(normalizarSenha),
 });
 
 export type LoginInput = z.input<typeof loginSchema>;
@@ -57,7 +76,7 @@ export type EsqueciSenhaInput = z.input<typeof esqueciSenhaSchema>;
 export const redefinirSenhaSchema = z
   .object({
     novaSenha: senhaSchema,
-    confirmarNovaSenha: z.string(),
+    confirmarNovaSenha: confirmarSenhaSchema,
   })
   .refine((dados) => dados.novaSenha === dados.confirmarNovaSenha, {
     error: "As senhas não coincidem.",
@@ -68,9 +87,12 @@ export type RedefinirSenhaInput = z.input<typeof redefinirSenhaSchema>;
 
 export const trocarSenhaSchema = z
   .object({
-    senhaAtual: z.string().min(1, { error: "Informe sua senha atual." }),
+    senhaAtual: z
+      .string()
+      .min(1, { error: "Informe sua senha atual." })
+      .transform(normalizarSenha),
     novaSenha: senhaSchema,
-    confirmarNovaSenha: z.string(),
+    confirmarNovaSenha: confirmarSenhaSchema,
   })
   .refine((dados) => dados.novaSenha === dados.confirmarNovaSenha, {
     error: "As senhas não coincidem.",

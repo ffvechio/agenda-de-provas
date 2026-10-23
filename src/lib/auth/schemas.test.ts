@@ -63,6 +63,25 @@ describe("cadastroSchema", () => {
     });
     expect(resultado.success).toBe(false);
   });
+
+  it("normaliza senha e confirmarSenha para NFC, aceitando formas equivalentes", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-15T12:00:00Z"));
+    const nfc = "Senha123456!ácil";
+    const nfd = "Senha123456!a" + "́" + "cil";
+    expect(nfc).not.toBe(nfd);
+
+    const resultado = cadastroSchema.safeParse({
+      ...dadosValidos(),
+      senha: nfc,
+      confirmarSenha: nfd,
+    });
+    expect(resultado.success).toBe(true);
+    if (resultado.success) {
+      expect(resultado.data.senha).toBe(nfc.normalize("NFC"));
+      expect(resultado.data.senha).toBe(resultado.data.confirmarSenha);
+    }
+  });
 });
 
 describe("loginSchema", () => {

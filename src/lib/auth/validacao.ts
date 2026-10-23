@@ -9,6 +9,20 @@ export function normalizarEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+/**
+ * Normaliza a senha para a forma Unicode NFC antes de enviar ao Supabase
+ * Auth. Sem isso, dois caracteres visualmente idênticos (ex.: "á" digitado
+ * como um único code point vs. "a" + acento combinante — algo que varia
+ * entre teclado, método de entrada, autofill do navegador/gerenciador de
+ * senhas) geram bytes diferentes e o GoTrue compara a senha byte a byte,
+ * então um login com uma senha "igual" à cadastrada pode falhar
+ * silenciosamente. Aplicado em todo fluxo que envia senha ao Supabase:
+ * cadastro, login, redefinição e troca de senha.
+ */
+export function normalizarSenha(senha: string): string {
+  return senha.normalize("NFC");
+}
+
 /** Política de senha do produto (ver docs/ARQUITETURA.md). */
 export const POLITICA_SENHA = {
   minimo: 12,

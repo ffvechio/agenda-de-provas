@@ -1,5 +1,10 @@
 import { describe, expect, it, afterEach, vi } from "vitest";
-import { dataNascimentoValida, normalizarEmail, POLITICA_SENHA } from "./validacao";
+import {
+  dataNascimentoValida,
+  normalizarEmail,
+  normalizarSenha,
+  POLITICA_SENHA,
+} from "./validacao";
 
 describe("normalizarEmail", () => {
   it("remove espaços nas extremidades", () => {
@@ -43,6 +48,23 @@ describe("dataNascimentoValida", () => {
   it("rejeita formato inválido", () => {
     expect(dataNascimentoValida("15/06/2026")).toBe(false);
     expect(dataNascimentoValida("not-a-date")).toBe(false);
+  });
+});
+
+describe("normalizarSenha", () => {
+  it("trata formas NFC e NFD do mesmo caractere acentuado como a mesma senha", () => {
+    // "á" como 1 code point (NFC) vs "a" + acento agudo combinante (NFD) —
+    // visualmente idênticos, mas strings JS diferentes até normalizar.
+    // Bug real: o GoTrue compara a senha byte a byte, sem normalizar, então
+    // cadastrar com uma forma e logar com a outra falhava silenciosamente.
+    const nfc = "Senha123!ácil";
+    const nfd = "Senha123!a" + "́" + "cil";
+    expect(nfc).not.toBe(nfd);
+    expect(normalizarSenha(nfc)).toBe(normalizarSenha(nfd));
+  });
+
+  it("não altera senhas que já estão em NFC", () => {
+    expect(normalizarSenha("SenhaForte123!")).toBe("SenhaForte123!");
   });
 });
 
