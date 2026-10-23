@@ -1,0 +1,10 @@
+-- Este arquivo roda apenas em `supabase db reset` / `supabase start` local.
+-- Não criamos usuários de teste aqui via SQL cru (schema interno do GoTrue
+-- muda entre versões e é frágil de replicar manualmente). Para dados
+-- fictícios de desenvolvimento, use:
+--
+--   npm run seed:dev
+--
+-- (scripts/seed-dev.ts, restrito a NODE_ENV !== "production" e que usa a
+-- service role key local para criar um atleta de teste com provas de
+-- exemplo). Nunca rode esse script contra um projeto de produção.
