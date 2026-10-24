@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cadastroSchema, type CadastroInput } from "@/lib/auth/schemas";
@@ -20,7 +19,6 @@ import {
 } from "@/components/ui/form";
 
 export function SignupForm() {
-  const router = useRouter();
   const [mensagem, setMensagem] = useState<string | null>(null);
   const hoje = new Date().toISOString().slice(0, 10);
 
@@ -37,12 +35,15 @@ export function SignupForm() {
 
   async function onSubmit(values: CadastroInput) {
     setMensagem(null);
+    // Em sucesso, a action redireciona para /inicio (redirect() do
+    // Next.js) — não retorna para cá.
     const resultado = await cadastrar(values);
     if (resultado?.message) {
       setMensagem(resultado.message);
-      return;
+      if (resultado.campo === "email") {
+        form.setError("email", { message: resultado.message });
+      }
     }
-    router.push(`/confirmar-email?email=${encodeURIComponent(values.email)}`);
   }
 
   return (

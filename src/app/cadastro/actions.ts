@@ -1,9 +1,10 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cadastroSchema, type CadastroInput } from "@/lib/auth/schemas";
 
-export type CadastroResult = { message: string } | void;
+export type CadastroResult = { message: string; campo?: "email" } | void;
 
 function contaJaExiste(error: { message?: string; code?: string }): boolean {
   return (
@@ -34,10 +35,7 @@ export async function cadastrar(
 
   if (error) {
     if (contaJaExiste(error)) {
-      // Resposta deliberadamente igual à de sucesso (ver confirmar-email):
-      // o próprio Supabase já evita reenviar e-mail para conta confirmada,
-      // então não há necessidade de diferenciar aqui.
-      return;
+      return { message: "Este e-mail já está cadastrado.", campo: "email" };
     }
     if (error.status === 429) {
       return { message: "Muitas tentativas. Aguarde um pouco e tente novamente." };
@@ -46,4 +44,9 @@ export async function cadastrar(
       message: "Não foi possível criar sua conta agora. Tente novamente.",
     };
   }
+
+  // Sem confirmação por e-mail: o cadastro já deixa a conta ativa e com
+  // sessão (cookies escritos pelo client acima) — vai direto para a área
+  // autenticada.
+  redirect("/inicio");
 }

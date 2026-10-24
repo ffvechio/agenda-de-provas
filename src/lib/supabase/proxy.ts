@@ -6,10 +6,6 @@ const ROTAS_PUBLICAS_ANONIMAS = ["/entrar", "/cadastro"];
 const PREFIXOS_PUBLICOS = [
   "/entrar",
   "/cadastro",
-  "/confirmar-email",
-  "/esqueci-senha",
-  "/redefinir-senha",
-  "/auth",
   "/privacidade",
   "/manifest.webmanifest",
   "/sw.js",

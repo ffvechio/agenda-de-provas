@@ -67,24 +67,6 @@ export const loginSchema = z.object({
 
 export type LoginInput = z.input<typeof loginSchema>;
 
-export const esqueciSenhaSchema = z.object({
-  email: emailSchema,
-});
-
-export type EsqueciSenhaInput = z.input<typeof esqueciSenhaSchema>;
-
-export const redefinirSenhaSchema = z
-  .object({
-    novaSenha: senhaSchema,
-    confirmarNovaSenha: confirmarSenhaSchema,
-  })
-  .refine((dados) => dados.novaSenha === dados.confirmarNovaSenha, {
-    error: "As senhas não coincidem.",
-    path: ["confirmarNovaSenha"],
-  });
-
-export type RedefinirSenhaInput = z.input<typeof redefinirSenhaSchema>;
-
 export const trocarSenhaSchema = z
   .object({
     senhaAtual: z

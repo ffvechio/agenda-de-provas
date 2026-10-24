@@ -37,9 +37,20 @@ Bugs reais foram encontrados e corrigidos graças aos testes/validação real
    navegador — é visualmente idêntico, mas gera senhas diferentes para o
    GoTrue. Corrigido normalizando toda senha para NFC
    (`normalizarSenha` em `src/lib/auth/validacao.ts`) antes de qualquer
-   chamada ao Supabase Auth: cadastro, login, troca de senha e redefinição.
-   Reproduzido e confirmado corrigido via navegador headless real (cadastro
-   → confirmação → logout → login com a forma NFD da mesma senha).
+   chamada ao Supabase Auth: cadastro, login, troca de senha.
+
+**Mudança de produto (2026-10-23, pedida pelo usuário)**: removidos
+confirmação de e-mail e recuperação de senha por e-mail. O mailer padrão
+do Supabase (sem SMTP próprio) tinha um limite de envio tão baixo que
+cadastros repetidos em teste já batiam em "muitas tentativas" — e
+customizar o conteúdo dos e-mails exigia SMTP próprio de qualquer forma.
+`auth.email.enable_confirmations = false` faz `signUp()` retornar sessão
+ativa direto, sem nenhuma tentativa de envio de e-mail. Removidos:
+`/confirmar-email`, `/esqueci-senha`, `/redefinir-senha`, `/auth/confirm`,
+os templates de e-mail e os schemas/ações correspondentes. Confirmado via
+`scripts/verify-e2e-local.mjs` (signup retorna `session` imediatamente) e
+via navegador real: 3 cadastros seguidos com e-mails diferentes, todos
+indo direto para `/inicio` sem qualquer bloqueio de rate limit.
 
 ## 2. Testes manuais/ponta-a-ponta — executados neste ambiente (2026-10-23)
 
@@ -51,10 +62,11 @@ inclusive em um navegador headless (Playwright, viewport 375×812 — mobile).
 **Verificado com sucesso** (`scripts/verify-e2e-local.mjs`, rodado e com
 saída 100% ✅ — reproduzível a qualquer momento com `supabase start` ativo):
 
-- [x] Cadastro cria o usuário e o e-mail de confirmação chega no Mailpit local.
-- [x] O link de confirmação (rota real `/auth/confirm` do Next.js, não só a API do Supabase) confirma a conta e cria sessão.
+- [x] Cadastro cria a conta e já retorna com sessão ativa (`signUp()` sem enviar nenhum e-mail — `enable_confirmations = false`).
 - [x] `profiles` é criado automaticamente pelo trigger `on_auth_user_created` com os dados do cadastro.
-- [x] Login funciona após a confirmação.
+- [x] Login funciona com e-mail + senha logo após o cadastro.
+- [x] 3 cadastros seguidos (e-mails diferentes, via navegador real) vão direto para `/inicio`, sem bloqueio de rate limit — confirma a correção pedida pelo usuário.
+- [x] Link "Esqueci minha senha" não existe mais na tela de login; `/confirmar-email`, `/esqueci-senha` e `/redefinir-senha` não são mais acessíveis (redirecionam para `/entrar`).
 - [x] Criar prova via RPC `salvar_prova_com_etapas` e lê-la de volta.
 - [x] **Isolamento de RLS entre dois usuários**: usuário B não consegue **ler**, **atualizar** nem **excluir** uma prova do usuário A via API direta (3 tentativas, 3 bloqueios confirmados).
 - [x] Ciclo completo de um `reminder_job`: claim atômico (`reivindicar_lembretes_pendentes`, status vira `processing`) → `concluir_tentativa_lembrete` (status `sent`) → 1 linha criada em `reminder_attempts`.
@@ -86,9 +98,6 @@ como pedido.
 **Segue pendente** (depende de credenciais de produção, dispositivo físico,
 ou tempo de execução fora do controle deste ambiente):
 
-- [ ] Reenvio de confirmação e cenário de link expirado/já usado (o fluxo existe e foi lido no código, mas não forçamos um token expirado de propósito).
-- [ ] Retomar um cadastro interrompido sem duplicar conta (comportamento documentado e decorre do próprio Supabase Auth; não forçamos esse cenário específico).
-- [ ] Fluxo completo de recuperação de senha ponta a ponta (login → esqueci senha → e-mail → nova senha → outras sessões invalidadas).
 - [ ] Sessão persistente entre reloads reais do navegador e em mais de um dispositivo simultâneo.
 - [ ] Alertas de duplicidade de prova (nome + data) — implementado e coberto por `buscarPossiveisDuplicatas`, não exercido no teste de navegador.
 - [ ] `criar_lembretes_do_dia()` realmente criando jobs na janela das 09:00 locais (o teste validou o restante do pipeline inserindo um `reminder_job` manualmente; a criação automática depende do horário real do servidor Postgres bater com a janela, não controlável facilmente em um teste local pontual).
@@ -159,4 +168,3 @@ plano Pro nesse momento.
 - Banco de dados perto de 500 MB ou egress perto de 5 GB/mês → avaliar Supabase Pro.
 - Mais de ~500k invocações de Edge Function/mês (lembretes + uso do app) → avaliar Supabase Pro.
 - Uso deixa de ser pessoal/hobby → migrar a Vercel para o plano Pro (exigência contratual, não só técnica).
-- Volume de e-mail transacional (confirmação/recuperação) perto do limite do plano gratuito do provedor SMTP escolhido → avaliar plano pago do provedor.

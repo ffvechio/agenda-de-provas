@@ -4,11 +4,11 @@
 //
 // Uso: npx supabase start && node scripts/verify-e2e-local.mjs
 //
-// Testa: signup, confirmação de e-mail via Mailpit, login, CRUD de prova
-// via RPC, isolamento de RLS entre dois usuários (leitura/escrita/exclusão
-// cruzada), o ciclo de vida completo de um reminder_job (claim atômico →
-// envio → tentativa registrada), a revalidação ao cancelar uma prova, e a
-// exclusão de conta em cascata.
+// Testa: signup (sem e-mail — enable_confirmations=false, sessão ativa
+// direto), CRUD de prova via RPC, isolamento de RLS entre dois usuários
+// (leitura/escrita/exclusão cruzada), o ciclo de vida completo de um
+// reminder_job (claim atômico → envio → tentativa registrada), a
+// revalidação ao cancelar uma prova, e a exclusão de conta em cascata.
 import { createClient } from "@supabase/supabase-js";
 
 const URL = "http://127.0.0.1:54321";
@@ -25,55 +25,30 @@ function falha(nome, detalhe) {
   process.exitCode = 1;
 }
 
-async function pegarLinkConfirmacao(email) {
-  const resp = await fetch(
-    `http://127.0.0.1:54324/api/v1/search?query=to:${encodeURIComponent(email)}`
-  );
-  const json = await resp.json();
-  const msg = json.messages?.[0];
-  if (!msg) return null;
-  const detalhe = await (
-    await fetch(`http://127.0.0.1:54324/api/v1/message/${msg.ID}`)
-  ).json();
-  const corpo = detalhe.Text || detalhe.HTML || "";
-  const match = corpo.match(/http:\/\/[^\s"]*\/auth\/confirm\?[^\s"]*/);
-  return match?.[0] ?? null;
-}
-
 async function main() {
   const admin = createClient(URL, SERVICE);
   const emailA = `atleta-a-${Date.now()}@teste.local`;
   const emailB = `atleta-b-${Date.now()}@teste.local`;
   const senha = "uma-frase-senha-bem-longa-123";
 
-  // --- Signup + confirmação (usuário A) ---
+  // --- Signup (sem e-mail: já volta com sessão ativa) — usuário A ---
   const clienteA = createClient(URL, ANON);
-  const { error: erroSignupA } = await clienteA.auth.signUp({
+  const { data: signupA, error: erroSignupA } = await clienteA.auth.signUp({
     email: emailA,
     password: senha,
     options: { data: { nome: "Atleta A", data_nascimento: "1990-01-01" } },
   });
   if (erroSignupA) return falha("signup A", erroSignupA.message);
-  ok("signup A");
+  if (!signupA.session) return falha("signup A não retornou sessão ativa (enable_confirmations deveria estar false)");
+  ok("signup A cria conta com sessão ativa, sem e-mail de confirmação");
 
-  await new Promise((r) => setTimeout(r, 500));
-  const linkA = await pegarLinkConfirmacao(emailA);
-  if (!linkA) return falha("link de confirmação A não encontrado no Mailpit");
-  ok("e-mail de confirmação A recebido no Mailpit");
-
-  const confirmResp = await fetch(linkA, { redirect: "manual" });
-  if (confirmResp.status !== 307 && confirmResp.status !== 302) {
-    return falha("confirmação A não redirecionou", confirmResp.status);
-  }
-  ok("link de confirmação A processado (redirect)");
-
-  // --- Login A ---
+  // --- Login A (confere que a senha realmente foi salva como enviada) ---
   const { error: erroLoginA } = await clienteA.auth.signInWithPassword({
     email: emailA,
     password: senha,
   });
   if (erroLoginA) return falha("login A", erroLoginA.message);
-  ok("login A após confirmação");
+  ok("login A com e-mail + senha");
 
   // Perfil criado automaticamente pelo trigger?
   const { data: perfilA, error: erroPerfilA } = await clienteA
@@ -115,20 +90,16 @@ async function main() {
   if (provaLida?.nome !== "Ultra de Paraty") return falha("leitura da prova recém-criada");
   ok("prova lida de volta corretamente");
 
-  // --- Signup + confirmação (usuário B) ---
+  // --- Signup (B) ---
   const clienteB = createClient(URL, ANON);
-  await clienteB.auth.signUp({
+  const { data: signupB, error: erroSignupB } = await clienteB.auth.signUp({
     email: emailB,
     password: senha,
     options: { data: { nome: "Atleta B", data_nascimento: "1992-02-02" } },
   });
-  await new Promise((r) => setTimeout(r, 500));
-  const linkB = await pegarLinkConfirmacao(emailB);
-  if (!linkB) return falha("link de confirmação B não encontrado");
-  await fetch(linkB, { redirect: "manual" });
-  const { error: erroLoginB } = await clienteB.auth.signInWithPassword({ email: emailB, password: senha });
-  if (erroLoginB) return falha("login B", erroLoginB.message);
-  ok("usuário B criado, confirmado e logado");
+  if (erroSignupB) return falha("signup B", erroSignupB.message);
+  if (!signupB.session) return falha("signup B não retornou sessão ativa");
+  ok("usuário B criado com sessão ativa");
 
   // --- Isolamento de RLS: B tenta ler/editar/excluir prova de A ---
   const { data: leituraCruzada } = await clienteB.from("provas").select("*").eq("id", provaId);
@@ -254,7 +225,7 @@ async function main() {
   }
   ok("excluir usuário remove provas/subscriptions em cascata (ON DELETE CASCADE)");
 
-  await admin.auth.admin.deleteUser((await admin.from("profiles").select("id").eq("nome", "Atleta B").single()).data.id);
+  await admin.auth.admin.deleteUser(signupB.user.id);
 
   console.log("\nTudo verificado com sucesso.");
 }

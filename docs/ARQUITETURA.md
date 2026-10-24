@@ -7,10 +7,12 @@ Aplicação web (PWA) para atletas organizarem seu calendário pessoal de provas
 inscrições nem integra organizadores. ~90% do uso é mobile. Idioma pt-BR,
 datas DD/MM/AAAA, distâncias em km/m.
 
-Autenticação: e-mail + senha (Supabase Auth), sem OTP e sem magic link.
-Confirmação de e-mail e recuperação de senha usam os fluxos nativos do
-Supabase Auth (e-mail com link), via SMTP configurável — Resend não é
-dependência obrigatória.
+Autenticação: e-mail + senha (Supabase Auth), sem OTP e sem magic link, sem
+confirmação de e-mail e sem recuperação de senha por e-mail — decisão de
+produto para não depender de nenhum provedor de envio de e-mail. O cadastro
+já cria a conta ativa e com sessão. Quem esquece a senha não tem um fluxo de
+autorrecuperação no MVP; a única forma de trocar senha é autenticado, em
+Perfil, informando a senha atual.
 
 Cinco dias antes de uma prova com inscrição confirmada (ou interesse com
 opt-in), o atleta recebe um Web Push às 09h no fuso configurado. O
@@ -91,12 +93,16 @@ entrega; o MVP não reenvia retroativamente lembretes cuja janela já passou.
 ## Autenticação
 
 - Cadastro e login exclusivamente e-mail + senha via `@supabase/ssr`.
-- Confirmação de e-mail: link nativo do Supabase Auth → rota
-  `/auth/callback` troca o código por sessão e redireciona conforme o tipo.
-- Recuperação de senha: rota `/auth/reset-password` trata a sessão de
-  recuperação apenas para definir a nova senha; ao concluir, todas as
-  sessões são invalidadas (`signOut({ scope: 'global' })`) e o atleta é
-  enviado para o login.
+- `enable_confirmations = false` no Supabase Auth: `signUp()` já retorna uma
+  sessão ativa, sem enviar e-mail nenhum — elimina tanto a dependência de
+  SMTP quanto o rate limit de envio do mailer padrão do Supabase, que
+  bloqueava cadastros repetidos em teste.
+- Sem recuperação de senha por e-mail. Esqueceu a senha, não tem como
+  recuperar sozinho no MVP — ver `/perfil` para trocar a senha autenticado.
+- Senha é normalizada para Unicode NFC (`normalizarSenha`) antes de
+  qualquer chamada ao Supabase Auth — evita que o mesmo caractere acentuado
+  digitado/colado de formas diferentes (NFC vs. NFD) seja tratado como uma
+  senha diferente pelo GoTrue, que compara bytes sem normalizar.
 - Troca de senha autenticada: exige a senha atual (reautenticação leve via
   `signInWithPassword`) antes de `updateUser`.
 - Exclusão de conta: rota de servidor que reautentica com a senha atual e
@@ -105,15 +111,14 @@ entrega; o MVP não reenvia retroativamente lembretes cuja janela já passou.
 
 ## Pendências de configuração (ambiente)
 
-Ver `docs/IMPLANTACAO.md` para o passo a passo. Resumo do que depende de
-ação humana fora deste ambiente:
+Ver `docs/IMPLANTACAO.md` para o passo a passo e para o estado atual real
+(projeto Supabase e deploy no Vercel já existem). Resumo do que ainda
+depende de ação humana:
 
-1. Criar projeto Supabase (hospedado) e fornecer URL/anon key/service role
-   key — ou rodar `supabase login` interativamente neste terminal.
-2. Escolher e configurar um provedor SMTP para e-mails reais em produção
-   (o serviço de e-mail embutido do Supabase é só para testes).
-3. Gerar par de chaves VAPID (posso gerar localmente, sem conta externa).
-4. Deploy no Vercel (há integração MCP disponível neste ambiente) e
-   configuração das variáveis de ambiente.
-5. Iniciar o Docker Desktop para desenvolvimento local do Supabase
+1. Gerar um novo par de chaves VAPID para produção quando for rotacionar.
+2. Deploy no Vercel (automático a cada push em `main`).
+3. Iniciar o Docker Desktop para desenvolvimento local do Supabase
    (`supabase start`).
+
+SMTP deixou de ser uma pendência de configuração — o produto não depende
+mais de envio de e-mail para nenhum fluxo de autenticação.

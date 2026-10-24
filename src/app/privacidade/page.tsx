@@ -50,9 +50,8 @@ export default function PrivacidadePage() {
           <h2 className="font-semibold">Para que usamos</h2>
           <p className="mt-1 text-muted-foreground">
             Para operar sua conta e sua agenda pessoal de provas, autenticar
-            seu acesso, enviar e-mails de confirmação de cadastro e
-            recuperação de senha, e enviar notificações push de lembrete 5
-            dias antes de provas confirmadas (quando ativadas). Não usamos
+            seu acesso, e enviar notificações push de lembrete 5 dias antes
+            de provas confirmadas (quando ativadas). Não usamos
             seus dados para publicidade e não os vendemos a terceiros.
           </p>
         </section>
@@ -60,11 +59,10 @@ export default function PrivacidadePage() {
         <section>
           <h2 className="font-semibold">Com quem compartilhamos</h2>
           <p className="mt-1 text-muted-foreground">
-            Usamos o Supabase (banco de dados e autenticação), um provedor de
-            hospedagem (Vercel) e um provedor de SMTP para envio de e-mails
-            transacionais. Esses provedores processam dados em nosso nome
-            como operadores técnicos de infraestrutura, não como terceiros
-            com acesso independente aos seus dados.
+            Usamos o Supabase (banco de dados e autenticação) e um provedor
+            de hospedagem (Vercel). Esses provedores processam dados em
+            nosso nome como operadores técnicos de infraestrutura, não como
+            terceiros com acesso independente aos seus dados.
           </p>
         </section>
 

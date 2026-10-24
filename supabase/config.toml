@@ -235,39 +235,18 @@ enable_signup = true
 # If enabled, a user will be required to confirm any email change on both the old, and new email
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
-# Confirmação de e-mail é obrigatória antes do primeiro login (seção 5 do produto).
-enable_confirmations = true
+# Produto decidiu não depender de envio de e-mail: sem confirmação de
+# cadastro e sem recuperação de senha por e-mail (ver docs/ARQUITETURA.md).
+# O cadastro já cria a conta ativa e com sessão, sem nenhuma chamada de
+# e-mail — isso também elimina o rate limit de envio que bloqueava
+# cadastros repetidos no mailer padrão do Supabase.
+enable_confirmations = false
 # A reautenticação de senha é feita na própria aplicação (senha atual + updateUser),
 # sem depender do fluxo de nonce por e-mail do Supabase.
 secure_password_change = false
-# Intervalo mínimo entre reenvios de confirmação/recuperação (evita spam).
 max_frequency = "60s"
-# Número de caracteres do OTP usado internamente pelo link de e-mail (não exibido ao atleta).
 otp_length = 6
-# Validade do link de confirmação/recuperação, em segundos (1 hora).
 otp_expiry = 3600
-
-# Em desenvolvimento, os e-mails são capturados pelo Inbucket local (local_smtp,
-# http://127.0.0.1:54324) — não saem para a internet. Em produção, configure um
-# provedor SMTP real no Dashboard do Supabase (Project Settings > Auth > SMTP)
-# ou, para projetos self-hosted, descomente e preencha o bloco abaixo via env vars.
-# Ver docs/IMPLANTACAO.md.
-# [auth.email.smtp]
-# enabled = true
-# host = "env(SUPABASE_SMTP_HOST)"
-# port = 587
-# user = "env(SUPABASE_SMTP_USER)"
-# pass = "env(SUPABASE_SMTP_PASS)"
-# admin_email = "env(SUPABASE_SMTP_SENDER_EMAIL)"
-# sender_name = "Minha Agenda de Provas"
-
-[auth.email.template.confirmation]
-subject = "Confirme seu e-mail — Minha Agenda de Provas"
-content_path = "./supabase/templates/confirmation.html"
-
-[auth.email.template.recovery]
-subject = "Redefinir senha — Minha Agenda de Provas"
-content_path = "./supabase/templates/recovery.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.

@@ -18,22 +18,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-export function LoginForm({
-  redirectTo,
-  erroLink,
-  senhaRedefinida,
-}: {
-  redirectTo?: string;
-  erroLink?: boolean;
-  senhaRedefinida?: boolean;
-}) {
+export function LoginForm({ redirectTo }: { redirectTo?: string }) {
   const router = useRouter();
-  const [mensagem, setMensagem] = useState<string | null>(
-    erroLink ? "O link usado é inválido ou expirou. Solicite um novo." : null
-  );
-  const [mensagemSucesso] = useState<string | null>(
-    senhaRedefinida ? "Senha redefinida com sucesso. Entre com a nova senha." : null
-  );
+  const [mensagem, setMensagem] = useState<string | null>(null);
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", senha: "" },
@@ -64,14 +51,6 @@ export function LoginForm({
             {mensagem}
           </p>
         ) : null}
-        {mensagemSucesso ? (
-          <p
-            role="status"
-            className="rounded-md bg-accent px-3 py-2 text-sm text-accent-foreground"
-          >
-            {mensagemSucesso}
-          </p>
-        ) : null}
 
         <FormField
           control={form.control}
@@ -97,15 +76,7 @@ export function LoginForm({
           name="senha"
           render={({ field }) => (
             <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel>Senha</FormLabel>
-                <a
-                  href="/esqueci-senha"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Esqueci minha senha
-                </a>
-              </div>
+              <FormLabel>Senha</FormLabel>
               <FormControl>
                 <PasswordInput autoComplete="current-password" {...field} />
               </FormControl>

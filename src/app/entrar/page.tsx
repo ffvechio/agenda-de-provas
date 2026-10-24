@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Entrar" };
 export default async function EntrarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ redirect?: string; erro?: string; redefinida?: string }>;
+  searchParams: Promise<{ redirect?: string }>;
 }) {
   const params = await searchParams;
 
@@ -24,11 +24,7 @@ export default async function EntrarPage({
         </>
       }
     >
-      <LoginForm
-        redirectTo={params.redirect}
-        erroLink={params.erro === "link-invalido"}
-        senhaRedefinida={params.redefinida === "1"}
-      />
+      <LoginForm redirectTo={params.redirect} />
     </AuthShell>
   );
 }
