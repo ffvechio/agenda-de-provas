@@ -139,28 +139,3 @@
     @apply font-sans;
   }
 }
-
-/* Textura técnica sutil: grade fina estilo painel de telemetria/GPS,
-   usada em telas de marketing e auth. Puramente decorativa (aria-hidden),
-   não compete com o conteúdo e desaparece com prefers-reduced-motion
-   indiretamente (é estática — não anima). */
-.bg-grid-tech {
-  background-image:
-    linear-gradient(to right, color-mix(in oklch, var(--foreground) 3.5%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 3.5%, transparent) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(60% 55% at 50% 0%, black, transparent 72%);
-}
-
-.bg-glow-primary {
-  background-image: radial-gradient(
-      38% 32% at 50% 0%,
-      color-mix(in oklch, var(--primary) 16%, transparent) 0%,
-      transparent 72%
-    ),
-    radial-gradient(
-      28% 26% at 88% 12%,
-      color-mix(in oklch, var(--stat) 12%, transparent) 0%,
-      transparent 72%
-    );
-}

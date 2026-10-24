@@ -1,12 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  CalendarDays,
-  Flag,
-  History,
-  Timer,
-  Zap,
-} from "lucide-react";
+import { CalendarDays, Flag, History, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/config/brand";
 
@@ -40,33 +33,20 @@ export default function LandingPage() {
   const titulo = palavras.join(" ");
 
   return (
-    <main className="relative flex flex-1 flex-col overflow-hidden">
-      <div
-        aria-hidden="true"
-        className="bg-grid-tech bg-glow-primary pointer-events-none absolute inset-x-0 top-0 -z-10 h-[620px]"
-      />
-
+    <main className="flex flex-1 flex-col">
       <div className="flex flex-1 flex-col items-center justify-center px-6 pt-20 pb-10 text-center">
-        <div className="inline-flex items-center gap-1.5 rounded-full border bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-          <Zap className="size-3.5 text-primary" aria-hidden="true" />
-          Feito para quem vive de prova em prova
+        <div className="flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+          <Flag className="size-7" aria-hidden="true" />
         </div>
 
-        <div className="relative mt-7 flex size-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[0_16px_32px_-12px_var(--primary)]">
-          <Flag className="size-8" aria-hidden="true" />
-        </div>
-
-        <h1 className="mt-7 max-w-sm text-4xl leading-[1.08] font-bold tracking-tight text-balance text-foreground sm:max-w-xl sm:text-5xl lg:text-6xl">
-          {titulo}{" "}
-          <span className="bg-gradient-to-r from-primary to-stat bg-clip-text text-transparent">
-            {destaque}
-          </span>
+        <h1 className="mt-6 max-w-sm text-4xl leading-[1.1] font-bold tracking-tight text-balance text-foreground sm:max-w-xl sm:text-5xl">
+          {titulo} <span className="text-primary">{destaque}</span>
         </h1>
         <p className="mt-4 max-w-sm text-base leading-relaxed text-muted-foreground sm:max-w-md sm:text-lg">
           {brand.descricaoApp}
         </p>
 
-        <dl className="mt-8 flex w-full max-w-sm items-stretch justify-center divide-x divide-border rounded-2xl border bg-card/60 py-4 backdrop-blur-sm sm:max-w-md">
+        <dl className="mt-9 flex w-full max-w-sm items-stretch justify-center divide-x divide-border border-y py-4 sm:max-w-md">
           {INDICADORES.map((item) => (
             <div key={item.rotulo} className="flex flex-1 flex-col px-2">
               <dt className="sr-only">{item.rotulo}</dt>
@@ -80,35 +60,29 @@ export default function LandingPage() {
           ))}
         </dl>
 
-        <div className="mt-8 grid w-full max-w-sm gap-3 text-left sm:max-w-3xl sm:grid-cols-3">
+        <div className="mt-9 flex w-full max-w-sm flex-col divide-y divide-border text-left sm:max-w-2xl sm:flex-row sm:divide-x sm:divide-y-0">
           {RECURSOS.map((recurso) => (
-            <div
-              key={recurso.titulo}
-              className="flex items-center gap-3 rounded-2xl border bg-card p-3.5 shadow-sm sm:flex-col sm:items-start sm:gap-2.5 sm:p-5"
-            >
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                <recurso.icone className="size-5" aria-hidden="true" />
-              </div>
+            <div key={recurso.titulo} className="flex items-start gap-3 py-4 sm:flex-1 sm:flex-col sm:gap-2 sm:px-5 sm:py-0">
+              <recurso.icone
+                className="size-5 shrink-0 text-primary sm:size-6"
+                strokeWidth={1.75}
+                aria-hidden="true"
+              />
               <div>
-                <p className="text-sm font-semibold text-card-foreground">
+                <p className="text-sm font-semibold text-foreground">
                   {recurso.titulo}
                 </p>
-                <p className="text-sm text-muted-foreground">{recurso.descricao}</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  {recurso.descricao}
+                </p>
               </div>
             </div>
           ))}
         </div>
 
         <div className="mt-10 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
-          <Button
-            asChild
-            size="lg"
-            className="h-12 w-full text-base shadow-[0_12px_24px_-10px_var(--primary)] sm:w-auto sm:px-8"
-          >
-            <Link href="/cadastro">
-              Criar conta
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </Link>
+          <Button asChild size="lg" className="h-12 w-full text-base sm:w-auto sm:px-8">
+            <Link href="/cadastro">Criar conta</Link>
           </Button>
           <Button
             asChild

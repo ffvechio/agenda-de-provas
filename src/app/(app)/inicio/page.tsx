@@ -69,7 +69,7 @@ export default async function InicioPage() {
       {proximaConfirmada ? (
         <Link
           href={`/provas/${proximaConfirmada.id}`}
-          className="bg-grid-tech relative flex flex-col gap-2 overflow-hidden rounded-2xl bg-primary p-5 text-primary-foreground shadow-[0_16px_32px_-14px_var(--primary)]"
+          className="flex flex-col gap-2 rounded-2xl bg-primary p-5 text-primary-foreground"
         >
           <span className="text-sm font-medium opacity-90">
             Próxima prova confirmada

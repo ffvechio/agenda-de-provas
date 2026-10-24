@@ -28,7 +28,7 @@ export function BottomNav() {
         <Link
           href="/provas/novo"
           aria-label="Adicionar prova"
-          className="-mt-6 flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_10px_24px_-6px_var(--primary)] ring-4 ring-background transition-transform active:scale-95"
+          className="-mt-6 flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg ring-4 ring-background transition-transform active:scale-95"
         >
           <Plus className="size-6" aria-hidden="true" />
         </Link>

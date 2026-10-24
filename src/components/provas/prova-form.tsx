@@ -183,19 +183,16 @@ export function ProvaForm({
           {multietapa ? (
             <div className="flex flex-col gap-3">
               {etapasArray.fields.map((etapaField, index) => (
-                <div
-                  key={etapaField.id}
-                  className="flex items-end gap-2 rounded-xl border p-3"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
-                    {index + 1}
-                  </div>
-                  <div className="grid flex-1 grid-cols-[1fr_auto_auto] gap-2">
+                <div key={etapaField.id} className="rounded-xl border p-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                      {index + 1}
+                    </div>
                     <FormField
                       control={form.control}
                       name={`etapas.${index}.modalidade`}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex-1">
                           <FormControl>
                             <Input placeholder="Natação, ciclismo..." {...field} />
                           </FormControl>
@@ -203,6 +200,18 @@ export function ProvaForm({
                         </FormItem>
                       )}
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="shrink-0"
+                      aria-label="Remover etapa"
+                      onClick={() => etapasArray.remove(index)}
+                    >
+                      <Trash2 className="size-4" aria-hidden="true" />
+                    </Button>
+                  </div>
+                  <div className="mt-2 grid grid-cols-[1fr_auto] gap-2 pl-9">
                     <FormField
                       control={form.control}
                       name={`etapas.${index}.distanciaValor`}
@@ -213,8 +222,7 @@ export function ProvaForm({
                               type="number"
                               step="0.001"
                               inputMode="decimal"
-                              className="w-20"
-                              placeholder="Dist."
+                              placeholder="Distância"
                               {...field}
                               value={(field.value as number | string) ?? ""}
                             />
@@ -230,7 +238,7 @@ export function ProvaForm({
                         <FormItem>
                           <Select value={field.value} onValueChange={field.onChange}>
                             <FormControl>
-                              <SelectTrigger className="w-16">
+                              <SelectTrigger className="w-20">
                                 <SelectValue />
                               </SelectTrigger>
                             </FormControl>
@@ -246,15 +254,6 @@ export function ProvaForm({
                       )}
                     />
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Remover etapa"
-                    onClick={() => etapasArray.remove(index)}
-                  >
-                    <Trash2 className="size-4" aria-hidden="true" />
-                  </Button>
                 </div>
               ))}
               {form.formState.errors.etapas?.message ? (

@@ -86,7 +86,7 @@ export function ProvaActions({
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
               <AlertDialogAction
-                className="bg-destructive text-white hover:bg-destructive/90"
+                className="bg-red-700 text-white hover:bg-red-800"
                 onClick={() => executar(() => excluirProva(id))}
               >
                 Excluir

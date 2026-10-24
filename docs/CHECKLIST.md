@@ -52,6 +52,42 @@ os templates de e-mail e os schemas/ações correspondentes. Confirmado via
 via navegador real: 3 cadastros seguidos com e-mails diferentes, todos
 indo direto para `/inicio` sem qualquer bloqueio de rate limit.
 
+**Restyle "endurance tech" + 2 bugs reportados pelo usuário (2026-10-23)**:
+
+4. **Reportado pelo usuário**: "texto preto em cima de fundo preto" em
+   algum lugar do site. Investigado com uma varredura automatizada de
+   contraste real (Playwright injetando um cálculo de WCAG contrast ratio
+   em cada nó de texto visível, nas duas telas de cada tema) — achado:
+   `AlertDialogAction`/`AlertDialogCancel` (`src/components/ui/alert-dialog.tsx`)
+   recebiam `className` customizado mas nunca repassavam pra dentro do
+   `<Button asChild>`; o Radix Slot então concatenava as classes do
+   `Button` padrão (`bg-primary`) com as classes customizadas
+   (`bg-destructive text-white`) sem o merge do Tailwind, e cada
+   propriedade CSS "ganhava" de uma fonte diferente — o resultado
+   dependia da ordem interna do CSS gerado pelo Tailwind, não do que o
+   componente pedia. Corrigido aplicando `buttonVariants({variant,size})`
+   diretamente via `cn()` no próprio elemento Radix, sem o wrapper
+   `<Button asChild>`. De quebra, o botão "Excluir" de confirmação em
+   modo escuro also tinha contraste abaixo do AA (3.76:1, branco sobre
+   `--destructive` claro demais no tema escuro) — fixado usando
+   `bg-red-700` (6.47:1), independente de tema.
+5. **Reportado pelo usuário**: inputs se sobrepondo no formulário de nova
+   prova em telas estreitas. Causa: a linha de cada etapa multisport usava
+   um grid de 3 colunas (`modalidade` flexível + `distância` fixa +
+   `unidade` fixa) competindo por espaço em ~330px úteis — o campo
+   "Modalidade" ficava espremido a ponto de mostrar só ~5 caracteres
+   (`"Nataç"` de "Natação"). Redesenhado como card de 2 linhas por etapa
+   (modalidade em linha própria, distância+unidade na linha de baixo) —
+   confirmado em 360px sem nenhum campo espremido.
+
+Nessa mesma passada, o visual foi simplificado a pedido do usuário ("mais
+clean, sem parecer IA"): removidos a textura de grade, o glow radial, o
+texto em gradiente e a badge flutuante acima do título da landing — essas
+são decorações bem reconhecíveis de geradores de site por IA. Mantido o
+sistema de cor (grafite + laranja + "stat" teal/ciano em números) e a
+fonte mono em contadores, mas a composição agora usa listas com
+divisores finos em vez de empilhar cartões com sombra pra tudo.
+
 ## 2. Testes manuais/ponta-a-ponta — executados neste ambiente (2026-10-23)
 
 Docker foi iniciado e `npx supabase start` rodou com sucesso, então foi
