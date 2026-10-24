@@ -28,7 +28,7 @@ export function BottomNav() {
         <Link
           href="/provas/novo"
           aria-label="Adicionar prova"
-          className="-mt-6 flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95"
+          className="-mt-6 flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_10px_24px_-6px_var(--primary)] ring-4 ring-background transition-transform active:scale-95"
         >
           <Plus className="size-6" aria-hidden="true" />
         </Link>
@@ -54,12 +54,18 @@ function NavLink({
       href={item.href}
       aria-current={ativo ? "page" : undefined}
       className={cn(
-        "flex min-h-11 min-w-11 flex-col items-center justify-center gap-0.5 px-2 py-2 text-xs font-medium",
-        ativo ? "text-primary" : "text-muted-foreground"
+        "relative flex min-h-11 min-w-11 flex-col items-center justify-center gap-0.5 px-2 py-2 text-xs font-medium transition-colors",
+        ativo ? "text-primary" : "text-muted-foreground hover:text-foreground"
       )}
     >
       <Icone className="size-5" aria-hidden="true" />
       {item.label}
+      {ativo ? (
+        <span
+          aria-hidden="true"
+          className="absolute top-0.5 size-1 rounded-full bg-primary"
+        />
+      ) : null}
     </Link>
   );
 }

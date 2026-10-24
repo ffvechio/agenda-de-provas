@@ -38,6 +38,33 @@ service worker manual, pequeno e auditável, dá mais controle do que uma
 camada de geração automática, e evita depender de um pacote de manutenção
 incerta no Next 16/App Router.
 
+## Identidade visual — "endurance tech" (2026-10-23)
+
+Restyle pedido pelo usuário: visual tecnológico com tema de esporte de
+endurance, mantendo todas as funcionalidades. Direção:
+
+- Grafite quase preto (`#0f1115` claro / `#f2f4f7` escuro) + laranja de alta
+  performance como única cor de ação (`--primary`) — todos os pares de
+  contraste texto/fundo verificados (WCAG AA ≥ 4.5:1) em `globals.css`.
+- Um segundo tom, `--stat` (teal no claro, ciano no escuro), reservado
+  só para números de desempenho (contagem regressiva, estatísticas, provas
+  "de interesse") — nunca usado em controles interativos, pra não brigar
+  com "laranja como única cor de ação".
+- `font-mono` (Geist Mono, já carregada) em números/distâncias/contadores
+  para reforçar a leitura "telemetria esportiva".
+- Textura de grade sutil (`.bg-grid-tech`) e glow radial (`.bg-glow-primary`)
+  em `globals.css`, usados nas telas de marketing/auth — decorativos,
+  `aria-hidden`, sem animação (não conflita com `prefers-reduced-motion`).
+- **Bug real encontrado durante a validação visual**: `--font-sans` em
+  `@theme inline` apontava pra si mesma (`var(--font-sans)`, circular), não
+  para a fonte Geist carregada em `layout.tsx` — todo o app renderizava
+  títulos numa serif de fallback do navegador. Corrigido apontando para
+  `var(--font-geist-sans)`.
+- Dark mode estava declarado em CSS mas nunca era ativado — faltava o
+  `ThemeProvider` do `next-themes` (`attribute="class"`, `enableSystem`) no
+  layout raiz. Adicionado; agora o tema segue a preferência do sistema de
+  verdade.
+
 ## Modelo de dados (Postgres / Supabase)
 
 - `profiles` (1:1 com `auth.users`): nome, data_nascimento, fuso_lembretes,

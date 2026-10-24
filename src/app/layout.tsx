@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
+import { ThemeProvider } from "@/components/theme-provider";
 import { brand } from "@/lib/config/brand";
 import "./globals.css";
 
@@ -33,7 +34,10 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: brand.corFundo,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: brand.corFundo },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0b0d" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -41,11 +45,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang={brand.idiomaHtml}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        {children}
-        <Toaster position="top-center" richColors closeButton />
-        <ServiceWorkerRegister />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+          <Toaster position="top-center" richColors closeButton />
+          <ServiceWorkerRegister />
+        </ThemeProvider>
       </body>
     </html>
   );

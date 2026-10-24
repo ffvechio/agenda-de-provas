@@ -69,7 +69,7 @@ export default async function InicioPage() {
       {proximaConfirmada ? (
         <Link
           href={`/provas/${proximaConfirmada.id}`}
-          className="flex flex-col gap-2 rounded-2xl bg-primary p-5 text-primary-foreground"
+          className="bg-grid-tech relative flex flex-col gap-2 overflow-hidden rounded-2xl bg-primary p-5 text-primary-foreground shadow-[0_16px_32px_-14px_var(--primary)]"
         >
           <span className="text-sm font-medium opacity-90">
             Próxima prova confirmada
@@ -80,7 +80,7 @@ export default async function InicioPage() {
             {proximaConfirmada.cidade}, {proximaConfirmada.estado}
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-bold">
+            <span className="font-mono text-4xl font-bold tabular-nums">
               {diasRestantes(proximaConfirmada.data, fuso)}
             </span>
             <span className="text-sm opacity-90">
@@ -95,12 +95,16 @@ export default async function InicioPage() {
       ) : null}
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border bg-card p-4 text-center">
-          <p className="text-2xl font-bold text-foreground">{totalInscritas}</p>
+        <div className="rounded-2xl border bg-card p-4 text-center">
+          <p className="font-mono text-2xl font-bold tabular-nums text-foreground">
+            {totalInscritas}
+          </p>
           <p className="text-xs text-muted-foreground">Inscrições confirmadas</p>
         </div>
-        <div className="rounded-xl border bg-card p-4 text-center">
-          <p className="text-2xl font-bold text-foreground">{totalInteresse}</p>
+        <div className="rounded-2xl border bg-card p-4 text-center">
+          <p className="font-mono text-2xl font-bold tabular-nums text-stat">
+            {totalInteresse}
+          </p>
           <p className="text-xs text-muted-foreground">Provas de interesse</p>
         </div>
       </div>

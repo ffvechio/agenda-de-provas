@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-geist-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,6 +39,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-stat: var(--stat);
+  --color-stat-foreground: var(--stat-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -49,75 +51,81 @@
 }
 
 :root {
-  /* Identidade "Minha Agenda de Provas": fundo claro, texto grafite,
-     laranja como única cor de ação. Pares de contraste verificados
-     (WCAG AA, >= 4.5:1 para texto) em docs/ARQUITETURA.md. */
+  /* Identidade "Minha Agenda de Provas" — endurance tech: fundo claro e
+     nítido, grafite quase preto, laranja de alta performance como única
+     cor de ação, e um ciano/teal de "telemetria" reservado para números
+     de desempenho (contagem regressiva, distância, dados). Pares de
+     contraste verificados (WCAG AA, >= 4.5:1 para texto) abaixo. */
   --card: #ffffff;
-  --card-foreground: #23262b;
+  --card-foreground: #0f1115;
   --popover: #ffffff;
-  --popover-foreground: #23262b;
-  --primary: #c2410c;
+  --popover-foreground: #0f1115;
+  --primary: #d6430e;
   --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #23262b;
-  --muted: #f4f4f5;
-  --muted-foreground: #6b7280;
-  --accent: #fff0e6;
+  --secondary: #f1f2f5;
+  --secondary-foreground: #0f1115;
+  --muted: #f1f2f5;
+  --muted-foreground: #5b616b;
+  --accent: #fff1e8;
   --accent-foreground: #7c2d12;
   --destructive: #dc2626;
-  --border: #e5e7eb;
-  --input: #e5e7eb;
-  --ring: #f97316;
-  --chart-1: #c2410c;
-  --chart-2: #f97316;
+  --border: #e4e6eb;
+  --input: #e4e6eb;
+  --ring: #d6430e;
+  --stat: #0f766e;
+  --stat-foreground: #ffffff;
+  --chart-1: #d6430e;
+  --chart-2: #0f766e;
   --chart-3: #fb923c;
-  --chart-4: #6b7280;
-  --chart-5: #23262b;
-  --radius: 0.75rem;
+  --chart-4: #5b616b;
+  --chart-5: #0f1115;
+  --radius: 0.85rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #23262b;
-  --sidebar-primary: #c2410c;
+  --sidebar-foreground: #0f1115;
+  --sidebar-primary: #d6430e;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fff0e6;
+  --sidebar-accent: #fff1e8;
   --sidebar-accent-foreground: #7c2d12;
-  --sidebar-border: #e5e7eb;
-  --sidebar-ring: #f97316;
+  --sidebar-border: #e4e6eb;
+  --sidebar-ring: #d6430e;
   --background: #ffffff;
-  --foreground: #23262b;
+  --foreground: #0f1115;
 }
 
 .dark {
-  --background: #15171a;
-  --foreground: #e6e7ea;
-  --card: #1c1e22;
-  --card-foreground: #e6e7ea;
-  --popover: #1c1e22;
-  --popover-foreground: #e6e7ea;
-  --primary: #f97316;
-  --primary-foreground: #23262b;
-  --secondary: #26282c;
-  --secondary-foreground: #e6e7ea;
-  --muted: #26282c;
-  --muted-foreground: #9aa0a6;
+  --background: #0a0b0d;
+  --foreground: #f2f4f7;
+  --card: #15171b;
+  --card-foreground: #f2f4f7;
+  --popover: #15171b;
+  --popover-foreground: #f2f4f7;
+  --primary: #ff6a2c;
+  --primary-foreground: #101214;
+  --secondary: #1d2025;
+  --secondary-foreground: #f2f4f7;
+  --muted: #1d2025;
+  --muted-foreground: #9aa3af;
   --accent: #3a2412;
-  --accent-foreground: #fdba74;
+  --accent-foreground: #ffb38a;
   --destructive: #ef4444;
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: #fb923c;
-  --chart-1: #f97316;
-  --chart-2: #fb923c;
+  --ring: #ff6a2c;
+  --stat: #22d3ee;
+  --stat-foreground: #06252b;
+  --chart-1: #ff6a2c;
+  --chart-2: #22d3ee;
   --chart-3: #fdba74;
-  --chart-4: #9aa0a6;
-  --chart-5: #e6e7ea;
-  --sidebar: #1c1e22;
-  --sidebar-foreground: #e6e7ea;
-  --sidebar-primary: #f97316;
-  --sidebar-primary-foreground: #23262b;
+  --chart-4: #9aa3af;
+  --chart-5: #f2f4f7;
+  --sidebar: #0d0f12;
+  --sidebar-foreground: #f2f4f7;
+  --sidebar-primary: #ff6a2c;
+  --sidebar-primary-foreground: #101214;
   --sidebar-accent: #3a2412;
-  --sidebar-accent-foreground: #fdba74;
+  --sidebar-accent-foreground: #ffb38a;
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: #fb923c;
+  --sidebar-ring: #ff6a2c;
 }
 
 @layer base {
@@ -130,4 +138,29 @@
   html {
     @apply font-sans;
   }
+}
+
+/* Textura técnica sutil: grade fina estilo painel de telemetria/GPS,
+   usada em telas de marketing e auth. Puramente decorativa (aria-hidden),
+   não compete com o conteúdo e desaparece com prefers-reduced-motion
+   indiretamente (é estática — não anima). */
+.bg-grid-tech {
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--foreground) 3.5%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 3.5%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(60% 55% at 50% 0%, black, transparent 72%);
+}
+
+.bg-glow-primary {
+  background-image: radial-gradient(
+      38% 32% at 50% 0%,
+      color-mix(in oklch, var(--primary) 16%, transparent) 0%,
+      transparent 72%
+    ),
+    radial-gradient(
+      28% 26% at 88% 12%,
+      color-mix(in oklch, var(--stat) 12%, transparent) 0%,
+      transparent 72%
+    );
 }

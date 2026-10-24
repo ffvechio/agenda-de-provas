@@ -3,6 +3,7 @@ import { CalendarDays, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { labelModalidade } from "@/lib/provas/constantes";
 import { formatarDataBr } from "@/lib/datas/formato";
+import { cn } from "cn";
 import type { ProvaRow } from "@/lib/provas/types";
 
 export function ProvaCard({ prova }: { prova: Pick<ProvaRow,
@@ -17,8 +18,21 @@ export function ProvaCard({ prova }: { prova: Pick<ProvaRow,
   return (
     <Link
       href={`/provas/${prova.id}`}
-      className="flex flex-col gap-2 rounded-xl border bg-card p-4 transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className={cn(
+        "group/prova-card relative flex flex-col gap-2 overflow-hidden rounded-2xl border bg-card p-4 pl-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      )}
     >
+      <span
+        aria-hidden="true"
+        className={cn(
+          "absolute inset-y-0 left-0 w-1.5",
+          prova.cancelada
+            ? "bg-destructive/60"
+            : prova.situacao === "inscrito"
+              ? "bg-primary"
+              : "bg-stat"
+        )}
+      />
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-semibold text-card-foreground">{prova.nome}</h3>
         <div className="flex shrink-0 flex-wrap justify-end gap-1">
@@ -41,8 +55,10 @@ export function ProvaCard({ prova }: { prova: Pick<ProvaRow,
           {prova.cidade}, {prova.estado}
         </span>
       </div>
-      <div className="text-sm text-muted-foreground">
-        {labelModalidade(prova.modalidade, prova.modalidade_outra)} · {distancia}
+      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <span>{labelModalidade(prova.modalidade, prova.modalidade_outra)}</span>
+        <span aria-hidden="true">·</span>
+        <span className="font-mono text-foreground">{distancia}</span>
       </div>
     </Link>
   );
