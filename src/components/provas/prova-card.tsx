@@ -30,7 +30,7 @@ export function ProvaCard({ prova }: { prova: Pick<ProvaRow,
             ? "bg-destructive/60"
             : prova.situacao === "inscrito"
               ? "bg-primary"
-              : "bg-stat"
+              : "bg-muted-foreground/40"
         )}
       />
       <div className="flex items-start justify-between gap-2">

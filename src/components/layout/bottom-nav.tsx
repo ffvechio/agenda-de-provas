@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CalendarDays, Home, Plus, UserRound } from "lucide-react";
+import { motion } from "motion/react";
 import { cn } from "cn";
 
 const ITENS = [
@@ -28,7 +29,7 @@ export function BottomNav() {
         <Link
           href="/provas/novo"
           aria-label="Adicionar prova"
-          className="-mt-6 flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg ring-4 ring-background transition-transform active:scale-95"
+          className="-mt-6 flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40 ring-4 ring-background transition-transform active:scale-90"
         >
           <Plus className="size-6" aria-hidden="true" />
         </Link>
@@ -61,9 +62,11 @@ function NavLink({
       <Icone className="size-5" aria-hidden="true" />
       {item.label}
       {ativo ? (
-        <span
+        <motion.span
+          layoutId="bottom-nav-indicador"
           aria-hidden="true"
           className="absolute top-0.5 size-1 rounded-full bg-primary"
+          transition={{ type: "spring", stiffness: 500, damping: 35 }}
         />
       ) : null}
     </Link>

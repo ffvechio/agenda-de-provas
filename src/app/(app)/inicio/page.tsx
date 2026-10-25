@@ -7,6 +7,7 @@ import { ProvaCard } from "@/components/provas/prova-card";
 import { labelModalidade } from "@/lib/provas/constantes";
 import { diasRestantes, formatarDataBr } from "@/lib/datas/formato";
 import type { ProvaRow } from "@/lib/provas/types";
+import { Reveal } from "@/components/motion/reveal";
 
 export const metadata: Metadata = { title: "Início" };
 
@@ -67,47 +68,51 @@ export default async function InicioPage() {
       </div>
 
       {proximaConfirmada ? (
-        <Link
-          href={`/provas/${proximaConfirmada.id}`}
-          className="flex flex-col gap-2 rounded-2xl bg-primary p-5 text-primary-foreground"
-        >
-          <span className="text-sm font-medium opacity-90">
-            Próxima prova confirmada
-          </span>
-          <span className="text-2xl font-bold">{proximaConfirmada.nome}</span>
-          <span className="flex items-center gap-1 text-sm opacity-90">
-            <MapPin className="size-3.5" aria-hidden="true" />
-            {proximaConfirmada.cidade}, {proximaConfirmada.estado}
-          </span>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-mono text-4xl font-bold tabular-nums">
-              {diasRestantes(proximaConfirmada.data, fuso)}
+        <Reveal>
+          <Link
+            href={`/provas/${proximaConfirmada.id}`}
+            className="flex flex-col gap-2 rounded-2xl bg-primary p-5 text-primary-foreground shadow-xl shadow-primary/25"
+          >
+            <span className="text-sm font-medium opacity-90">
+              Próxima prova confirmada
             </span>
-            <span className="text-sm opacity-90">
-              {diasRestantes(proximaConfirmada.data, fuso) === 1 ? "dia" : "dias"} ·{" "}
-              {formatarDataBr(proximaConfirmada.data)}
+            <span className="text-2xl font-bold">{proximaConfirmada.nome}</span>
+            <span className="flex items-center gap-1 text-sm opacity-90">
+              <MapPin className="size-3.5" aria-hidden="true" />
+              {proximaConfirmada.cidade}, {proximaConfirmada.estado}
             </span>
-          </div>
-          <span className="text-xs opacity-80">
-            {labelModalidade(proximaConfirmada.modalidade, proximaConfirmada.modalidade_outra)}
-          </span>
-        </Link>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="font-mono text-4xl font-bold tabular-nums">
+                {diasRestantes(proximaConfirmada.data, fuso)}
+              </span>
+              <span className="text-sm opacity-90">
+                {diasRestantes(proximaConfirmada.data, fuso) === 1 ? "dia" : "dias"} ·{" "}
+                {formatarDataBr(proximaConfirmada.data)}
+              </span>
+            </div>
+            <span className="text-xs opacity-80">
+              {labelModalidade(proximaConfirmada.modalidade, proximaConfirmada.modalidade_outra)}
+            </span>
+          </Link>
+        </Reveal>
       ) : null}
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border bg-card p-4 text-center">
-          <p className="font-mono text-2xl font-bold tabular-nums text-foreground">
-            {totalInscritas}
-          </p>
-          <p className="text-xs text-muted-foreground">Inscrições confirmadas</p>
+      <Reveal delay={0.08}>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-2xl border bg-card p-4 text-center">
+            <p className="font-mono text-2xl font-bold tabular-nums text-foreground">
+              {totalInscritas}
+            </p>
+            <p className="text-xs text-muted-foreground">Inscrições confirmadas</p>
+          </div>
+          <div className="rounded-2xl border bg-card p-4 text-center">
+            <p className="font-mono text-2xl font-bold tabular-nums text-muted-foreground">
+              {totalInteresse}
+            </p>
+            <p className="text-xs text-muted-foreground">Provas de interesse</p>
+          </div>
         </div>
-        <div className="rounded-2xl border bg-card p-4 text-center">
-          <p className="font-mono text-2xl font-bold tabular-nums text-stat">
-            {totalInteresse}
-          </p>
-          <p className="text-xs text-muted-foreground">Provas de interesse</p>
-        </div>
-      </div>
+      </Reveal>
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
@@ -123,7 +128,11 @@ export default async function InicioPage() {
             Nenhuma prova futura cadastrada.
           </p>
         ) : (
-          proximasGeral.map((prova) => <ProvaCard key={prova.id} prova={prova} />)
+          proximasGeral.map((prova, i) => (
+            <Reveal key={prova.id} delay={0.12 + i * 0.05}>
+              <ProvaCard prova={prova} />
+            </Reveal>
+          ))
         )}
       </div>
     </div>
